@@ -1,19 +1,32 @@
+import { v4 as UUID4 } from "uuid";
+import { DraftExpense, Expense } from "../types"
+
 //Exportamos el type de Acciones que se van a poder usar en el useReducer
 export type BudgetActions = 
 { type: 'add-budget', payload: { budget: number } } | 
-{ type: 'show-modal'} |
-{ type: 'close-modal'}
+{ type: 'show-modal' } |
+{ type: 'close-modal' } | 
+{ type: 'add-expense', payload: { expense: DraftExpense } }
 
 //Tipo de state para el estado del useReducer
 export type BudgetState = {
     budget: number
     modal: boolean
+    expenses: Expense[]
 }
 
 //Estado inicial del estado para inicializarlo en el useReducer
 export const initialState = {
     budget: 0,
-    modal: false
+    modal: false,
+    expenses: []
+}
+
+const createExpense = (draftexpense: DraftExpense) : Expense => {
+    return {
+        ...draftexpense,
+        id: UUID4()
+    }
 }
 
 //exportamos el Reducer para usar con el useReducer
@@ -43,6 +56,18 @@ export const budgetReducer = (state: BudgetState = initialState, action:BudgetAc
             ...state,
             modal: false
         }
+    }
+
+    if(action.type === 'add-expense'){
+
+        const expense = createExpense(action.payload.expense)
+
+        return {
+            ...state,
+            expenses: [...state.expenses, expense] ,
+            modal: false //esto cierra el modal
+        }
+
     }
 
 

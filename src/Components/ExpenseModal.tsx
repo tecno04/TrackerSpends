@@ -19,6 +19,12 @@ export default function ExpenseModal() {
         </button>
       </div>
 
+        {/* 
+            en el parametro "show" instanciamos la variable "state" y accedemos a la propiedad "modal" (que es un valor boolean)
+            donde al cambiar entre true o false, para mostrar (o no) el Modal.
+            En el "onClose" usamos el "dispatch" y pasamos el type para poder cerrarlo 
+            (no hay crucesita pero se puede clickear) afuera para poder cerrarlo
+        */}
       <Transition appear show={state.modal} as={Fragment}>
         <Dialog as="div" className="relative z-10" onClose={()=> dispatch({type:'close-modal'}) }>
           <Transition.Child
@@ -46,6 +52,7 @@ export default function ExpenseModal() {
               >
                 <Dialog.Panel className="w-full max-w-3xl transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
     
+                  {/* Instanciamos el formulario */}
                   <ExpenseForm />
     
                 </Dialog.Panel>
