@@ -25,7 +25,12 @@ function App() {
       </header>
 
       <div className="max-w-3xl mx-auto bg-white shadow-lg rounded-lg mt-10 p-10">
-        { isValidBudget ? <BudgetTracker /> : <BudgetForm /> }
+        { 
+          isValidBudget 
+            ? 
+            <BudgetTracker /> 
+            : 
+            <BudgetForm /> }
       </div>
 
       <main className="max-w-3xl mx-auto py-10">

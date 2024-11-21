@@ -6,7 +6,15 @@ import { ExpenseForm } from './ExpenseForm';
 
 export default function ExpenseModal() {
 
-  const { state, dispatch } = useBudget()
+  const { state, dispatch, amountSpend } = useBudget()
+
+  const percentaje = +((amountSpend / state.budget) * 100).toFixed(2)
+
+  const notAvailaibleMoney = () => {
+
+    return percentaje === 100
+
+  }
 
   return (
     <>
@@ -14,6 +22,8 @@ export default function ExpenseModal() {
         <button
           type="button"
           onClick={() => dispatch({type:'show-modal'})}
+          disabled={ notAvailaibleMoney() }
+          className={`${percentaje === 100 ? 'disabled:opacity-20' : ''}`}
         >
           <PlusCircleIcon className='w-16 h-16 text-blue-600 rounded-full' />
         </button>
