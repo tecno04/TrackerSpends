@@ -8,7 +8,24 @@ export type BudgetActions =
 { type: 'close-modal' } | 
 { type: 'add-expense', payload: { expense: DraftExpense } } | 
 { type: 'delete-expense', payload: {id: Expense['id']} } | 
-{ type: 'get-expense-by-id', payload: {id: Expense['id']} }
+{ type: 'get-expense-by-id', payload: {id: Expense['id']} } | 
+{ type: 'update-expense', payload: { expense: Expense } }
+
+/*
+
+*/
+const budgetInitial = (): number => {
+    const localStorageBudget = localStorage.getItem('budget')
+    return localStorageBudget ? +localStorageBudget : 0
+}
+
+/*
+
+*/
+const getLocalStorageExpenses = (): Expense[] => {
+    const localStorageExpense = localStorage.getItem('expenses')
+    return localStorageExpense ? JSON.parse(localStorageExpense) : []
+}
 
 //Tipo de state para el estado del useReducer
 export type BudgetState = {
@@ -20,9 +37,9 @@ export type BudgetState = {
 
 //Estado inicial del estado para inicializarlo en el useReducer
 export const initialState = {
-    budget: 0,
+    budget: budgetInitial(),
     modal: false,
-    expenses: [],
+    expenses: getLocalStorageExpenses(),
     editingId: ''
 }
 
@@ -50,7 +67,8 @@ export const budgetReducer = (state: BudgetState = initialState, action:BudgetAc
         
         return{
             ...state,
-            modal: true
+            modal: true,
+            editingId: ''
         }
     }
 
@@ -86,6 +104,14 @@ export const budgetReducer = (state: BudgetState = initialState, action:BudgetAc
             ...state,
             editingId: action.payload.id,
             modal: true
+        }
+    }
+
+    if(action.type === 'update-expense'){
+        return {
+            ...state,
+            expenses: state.expenses.map(expense => expense.id === action.payload.expense.id ? action.payload.expense : expense),
+            modal:false
         }
     }
 

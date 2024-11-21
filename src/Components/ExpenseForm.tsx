@@ -2,7 +2,7 @@ import { categories } from "../data/categories"
 import { DatePicker } from "react-date-picker";
 import 'react-date-picker/dist/DatePicker.css'
 import 'react-calendar/dist/Calendar.css'
-import { ChangeEvent, useState, FormEvent } from "react";
+import { ChangeEvent, useState, FormEvent, useEffect } from "react";
 import { DraftExpense, Value } from "../types/index";
 import { ErrorMessage } from "./ErrorMessage";
 import { useBudget } from "../hook/useBudget";
@@ -27,7 +27,9 @@ export const ExpenseForm = () => {
     const [error, seterror] = useState('')
 
     //esportamos del hook, el dispatch (Fn) para usar en el "handleSubmit"
-    const { dispatch } = useBudget()
+    const { state, dispatch, amountAvalaible } = useBudget()
+
+    const [previousAmount, setPreviousAmount] = useState(0)
 
     /*
         Funcion especifica para el input date, que recibe, un valor, del tipo type "Value" donde se configura con el useState:
@@ -78,8 +80,27 @@ export const ExpenseForm = () => {
             return
         }
 
-        //Enviar al reducer los nuevos datos a guardar
-        dispatch({type:'add-expense', payload: {expense: expense}})
+        if((expense.amount - previousAmount) > amountAvalaible){
+
+            seterror('No tienes suficientes fondos para este gasto')
+
+            return
+        }
+
+        //Enviar al reducer los nuevos datos a guardar - valida si hay datos para editar
+        if(state.editingId){
+            dispatch(
+                {
+                    type:'update-expense', 
+                    payload: {
+                        expense: {id: state.editingId, ...expense} 
+                    }
+                } 
+            )
+
+        }else{
+            dispatch({type:'add-expense', payload: {expense: expense}})
+        }
 
         //reiniciar el state de los datos
         setExpense({
@@ -88,14 +109,23 @@ export const ExpenseForm = () => {
             category:'',
             date: new Date()
         })
+        
+        setPreviousAmount(0)
 
     }
 
+    useEffect(() => {
+        if(state.editingId){
+            const editingExpense = state.expenses.filter(current => current.id === state.editingId)[0]
+            setExpense(editingExpense)
+            setPreviousAmount(editingExpense.amount)
+        }
+    }, [state.editingId])
 
   return (
     <form className="space-y-5" onSubmit={ handleSubmit }>
         <legend className="uppercase text-center text-2xl font-black border-b-4">
-            Nuevo Gasto
+            {state.editingId == '' ? 'Nuevo Gasto' : 'Actualizar Gasto'}
         </legend>
 
         { error && <ErrorMessage>{error}</ErrorMessage> }
@@ -153,7 +183,7 @@ export const ExpenseForm = () => {
         <input 
             type="submit"
             className="bg-blue-600 cursor-pointer w-full p-2 text-white uppercase font-bold rounded-lg"
-            value="Registrar Gasto"
+            value={state.editingId == '' ? 'Registrar Gasto' : 'Actualizar Gasto'}
         />
 
     </form>

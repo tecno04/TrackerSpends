@@ -1,4 +1,4 @@
-import { useMemo } from "react"
+import { useEffect, useMemo } from "react"
 import { BudgetForm } from "./Components/BudgetForm"
 import { useBudget } from "./hook/useBudget"
 import { BudgetTracker } from "./Components/BudgetTracker"
@@ -10,6 +10,11 @@ function App() {
   const { state} = useBudget()
 
   const isValidBudget = useMemo(() => { return state.budget > 0 }, [state.budget])
+
+  useEffect(() => {
+    localStorage.setItem('budget', state.budget.toString()) //guardamos en el local storage, lo que almacene el state en cuanto al presupuesto inicial
+    localStorage.setItem('expenses', JSON.stringify(state.expenses)) //guardamos cada gasto adicionado en el state de gastos sobre el presupuesto
+  }, [state]) //siempre que cambie algo en el state, useEffect renderizara de nuevo
 
   return (
     <>
