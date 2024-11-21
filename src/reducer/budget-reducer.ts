@@ -6,20 +6,24 @@ export type BudgetActions =
 { type: 'add-budget', payload: { budget: number } } | 
 { type: 'show-modal' } |
 { type: 'close-modal' } | 
-{ type: 'add-expense', payload: { expense: DraftExpense } }
+{ type: 'add-expense', payload: { expense: DraftExpense } } | 
+{ type: 'delete-expense', payload: {id: Expense['id']} } | 
+{ type: 'get-expense-by-id', payload: {id: Expense['id']} }
 
 //Tipo de state para el estado del useReducer
 export type BudgetState = {
     budget: number
     modal: boolean
     expenses: Expense[]
+    editingId: Expense['id']
 }
 
 //Estado inicial del estado para inicializarlo en el useReducer
 export const initialState = {
     budget: 0,
     modal: false,
-    expenses: []
+    expenses: [],
+    editingId: ''
 }
 
 const createExpense = (draftexpense: DraftExpense) : Expense => {
@@ -70,6 +74,20 @@ export const budgetReducer = (state: BudgetState = initialState, action:BudgetAc
 
     }
 
+    if(action.type === 'delete-expense'){
+        return{
+            ...state,
+            expenses: state.expenses.filter(rem_expense => rem_expense.id !== action.payload.id)
+        }
+    }
+
+    if(action.type === 'get-expense-by-id'){
+        return {
+            ...state,
+            editingId: action.payload.id,
+            modal: true
+        }
+    }
 
     //Finalmente, si alguno type no coincide, retornamos el state
     return state
