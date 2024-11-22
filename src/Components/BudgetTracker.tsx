@@ -6,7 +6,7 @@ import { AmountDisplay } from "./AmountDisplay"
 
 export const BudgetTracker = () => {
 
-  const { state, amountAvalaible, amountSpend } = useBudget()
+  const { state, dispatch ,amountAvalaible, amountSpend } = useBudget()
 
   const percentaje = +((amountSpend / state.budget) * 100).toFixed(2)
 
@@ -29,7 +29,7 @@ export const BudgetTracker = () => {
         </div>
 
         <div className="flex flex-col justify-center items-center gap-8">
-            <button className="bg-pink-600 w-full p-2 text-white uppercase font-bold rounded-lg">
+            <button className="bg-pink-600 w-full p-2 text-white uppercase font-bold rounded-lg" onClick={() => { dispatch({type:'reset-expnese'}) } } >
                 RESETEAR APP
             </button>
         </div>

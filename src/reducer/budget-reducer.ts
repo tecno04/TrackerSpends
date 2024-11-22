@@ -1,5 +1,5 @@
 import { v4 as UUID4 } from "uuid";
-import { DraftExpense, Expense } from "../types"
+import { Category, DraftExpense, Expense } from "../types"
 
 //Exportamos el type de Acciones que se van a poder usar en el useReducer
 export type BudgetActions = 
@@ -9,7 +9,9 @@ export type BudgetActions =
 { type: 'add-expense', payload: { expense: DraftExpense } } | 
 { type: 'delete-expense', payload: {id: Expense['id']} } | 
 { type: 'get-expense-by-id', payload: {id: Expense['id']} } | 
-{ type: 'update-expense', payload: { expense: Expense } }
+{ type: 'update-expense', payload: { expense: Expense } } | 
+{ type: 'reset-expnese'} | 
+{ type: 'add-filter-category', payload: {id: Category['id'] } }
 
 /*
 
@@ -33,6 +35,7 @@ export type BudgetState = {
     modal: boolean
     expenses: Expense[]
     editingId: Expense['id']
+    currentCategory: Category['id']
 }
 
 //Estado inicial del estado para inicializarlo en el useReducer
@@ -40,7 +43,8 @@ export const initialState = {
     budget: budgetInitial(),
     modal: false,
     expenses: getLocalStorageExpenses(),
-    editingId: ''
+    editingId: '',
+    currentCategory: ''
 }
 
 const createExpense = (draftexpense: DraftExpense) : Expense => {
@@ -112,6 +116,22 @@ export const budgetReducer = (state: BudgetState = initialState, action:BudgetAc
             ...state,
             expenses: state.expenses.map(expense => expense.id === action.payload.expense.id ? action.payload.expense : expense),
             modal:false
+        }
+    }
+
+    if(action.type === 'reset-expnese'){
+        return {
+            ...state,
+            expenses: [],
+            budget: 0,
+            editingId: ''
+        }
+    }
+
+    if(action.type === 'add-filter-category'){
+        return {
+            ...state,
+            currentCategory: action.payload.id
         }
     }
 
